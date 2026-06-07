@@ -34,6 +34,7 @@ let sortBy = 'date-desc';
 let monthlyBudget = 0;
 let deleteCandidateId = null;
 let authToken = localStorage.getItem('fintrack_token') || null;
+let loggedInUser = localStorage.getItem('fintrack_user') || null;
 
 /* ============================================================
    2. ELEMEN DOM (cache sekali, pakai terus)
@@ -127,6 +128,10 @@ async function loadFromStorage() {
   if (!authToken) {
     showLoginModal();
     return;
+  }
+
+  if (loggedInUser && DOM.greeting) {
+    DOM.greeting.textContent = `Halo, ${loggedInUser}`;
   }
 
   try {
@@ -1043,11 +1048,21 @@ function hideLoginModal() {
 
 function handleUnauthorized() {
   authToken = null;
+  loggedInUser = null;
   localStorage.removeItem('fintrack_token');
+  localStorage.removeItem('fintrack_user');
   transactions = [];
   dispatchTransactionUpdated();
   showToast('Sesi Anda berakhir. Silakan login kembali.', 'error');
   showLoginModal();
+}
+
+const btnLogout = document.getElementById('btnLogout');
+if (btnLogout) {
+  btnLogout.addEventListener('click', () => {
+    handleUnauthorized();
+    showToast('Berhasil logout!', 'success');
+  });
 }
 
 if (DOM.btnLogin) {
@@ -1070,7 +1085,10 @@ if (DOM.btnLogin) {
       
       const data = await res.json();
       authToken = data.access_token;
+      loggedInUser = data.username;
       localStorage.setItem('fintrack_token', authToken);
+      localStorage.setItem('fintrack_user', loggedInUser);
+      if (DOM.greeting) DOM.greeting.textContent = `Halo, ${loggedInUser}`;
       hideLoginModal();
       showToast('Login berhasil!', 'success');
       init(); // Reload data

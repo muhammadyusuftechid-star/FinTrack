@@ -19,6 +19,7 @@ class Transaction(database.Base):
     amount = Column(Float)
     type = Column(String(50)) # 'income' atau 'expense'
     category = Column(String(100), nullable=True)
+    note = Column(String(255), nullable=True)
     date = Column(String(20)) # Disimpan sebagai YYYY-MM-DD string
     
     user_id = Column(Integer, ForeignKey("users.id"))
