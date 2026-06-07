@@ -81,7 +81,18 @@
 | B2 | **Database Models** — Tabel Users, Transactions (SQLAlchemy) | ✅ SELESAI | 🔴 Tinggi | (Backend Repo) |
 | B3 | **REST API Endpoint (CRUD)** — API untuk Get, Post, Put, Delete | ✅ SELESAI | 🔴 Tinggi | (Backend Repo) |
 | B4 | **Frontend Refactor** — Ganti `localStorage` dengan `fetch()` API | ✅ SELESAI | 🔴 Tinggi | main.js |
-| B5 | **Sistem Autentikasi** — Login/Register, JWT Token (Multi-User) | ✅ SELESAI | 🟡 Sedang | index.html, main.js, Backend |
+
+---
+
+## 🔐 FASE 4: AUTHENTICATION & MULTI-USER (Sistem Login)
+
+> Mengamankan aplikasi dan memisahkan data tiap pengguna menggunakan JWT.
+
+| # | Fitur | Status | Prioritas | File Terdampak |
+|---|-------|--------|-----------|----------------|
+| L1 | **Sistem Autentikasi Backend** — Enkripsi Bcrypt & Token JWT | ✅ SELESAI | 🔴 Tinggi | backend/auth.py |
+| L2 | **UI Modal Login/Register** — Pop-up penghalang dashboard | ✅ SELESAI | 🔴 Tinggi | index.html, style.css |
+| L3 | **State Token Frontend** — Pengiriman token di header Fetch API | ✅ SELESAI | 🔴 Tinggi | main.js |
 
 ---
 
@@ -174,13 +185,13 @@ Urutan optimal untuk portfolio impact tertinggi:
 
 ---
 
-## 🎯 URUTAN PENGERJAAN FASE 3 (FULL-STACK PYTHON)
+## 🎯 URUTAN PENGERJAAN FASE 3 & 4 (FULL-STACK & AUTH)
 
-Fase ini mengubah status proyek dari statis (Frontend-only) menjadi aplikasi *Production-Ready*.
+Fase ini mengubah status proyek dari statis (Frontend-only) menjadi aplikasi *Production-Ready* dengan pengamanan.
 1. **B1 & B2**: Menyiapkan pondasi Database MySQL/SQLite dan ORM SQLAlchemy.
 2. **B3**: Mengekspos API CRUD untuk data transaksi.
 3. **B4**: Memotong ketergantungan *Frontend* terhadap *LocalStorage*, menggantinya dengan `fetch()` REST API.
-4. **B5**: Menyuntikkan JWT Authentication, sehingga aplikasi mendukung sistem *Multi-User* yang aman.
+4. **Fase 4 (L1-L3)**: Menyuntikkan JWT Authentication, UI Modal Login, dan interceptor Fetch, sehingga aplikasi mendukung sistem *Multi-User* yang aman.
 
 ---
 
@@ -191,4 +202,4 @@ Fase ini mengubah status proyek dari statis (Frontend-only) menjadi aplikasi *Pr
 4. Anda akan langsung masuk ke Dashboard utama dan siap menambahkan data!
 
 ---
-_Terakhir diupdate: Fase 1 (Submission), Fase 2 (Portfolio), & Fase 3 (Full-Stack) ✅ SELESAI 100%_
+_Terakhir diupdate: Fase 1 (Submission), Fase 2 (Portfolio), Fase 3 (API), & Fase 4 (Auth) ✅ SELESAI 100%_
