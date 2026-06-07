@@ -1,0 +1,13 @@
+# Virtual Environment Python
+backend/venv/
+venv/
+__pycache__/
+*.pyc
+
+# Database SQLite (Jangan di-commit karena data dinamis)
+backend/fintrack.db
+*.db
+
+# OS Files
+.DS_Store
+Thumbs.db

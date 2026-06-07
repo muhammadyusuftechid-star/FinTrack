@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="FinTrack — Aplikasi pencatat keuangan pribadi. Catat pemasukan dan pengeluaran harianmu dengan mudah." />
+  <title>FinTrack — Personal Expense Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ========== HEADER ========== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="material-symbols-outlined logo-icon icon-fill">payments</span>
+        <span class="logo-text">FinTrack</span>
+      </div>
+      <div class="header-right">
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode" title="Ganti Tema">
+          <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+        </button>
+        <!-- GREETING: Ubah isi sesuai nama & username Dicoding kamu -->
+        <p class="greeting" id="greeting">Halo, Yusuf (yusuf123)</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== MAIN ========== -->
+  <main class="app-main" style="display: none;">
+
+    <!-- SUMMARY ROW -->
+    <section class="summary-section" aria-label="Ringkasan keuangan">
+      <div class="summary-card">
+        <h2 class="summary-label">Total Saldo</h2>
+        <div class="summary-value summary-value--balance" id="balance">Rp 0</div>
+      </div>
+      <div class="summary-card">
+        <h2 class="summary-label">Pemasukan</h2>
+        <div class="summary-row">
+          <span class="summary-value summary-value--income" id="totalIncome">Rp 0</span>
+          <span class="material-symbols-outlined summary-icon summary-icon--income">arrow_upward</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <h2 class="summary-label">Pengeluaran</h2>
+        <div class="summary-row">
+          <span class="summary-value summary-value--expense" id="totalExpense">Rp 0</span>
+          <span class="material-symbols-outlined summary-icon summary-icon--expense">arrow_downward</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUDGET PROGRESS -->
+    <section class="budget-section" id="budgetSection" style="display:none;" aria-label="Progres Budget Bulanan">
+      <div class="budget-header">
+        <span class="budget-title">Batas Pengeluaran Bulan Ini</span>
+        <span class="budget-text" id="budgetStatus">Rp 0 / Rp 0</span>
+      </div>
+      <div class="budget-bar-wrap">
+        <div class="budget-bar-fill" id="budgetBarFill"></div>
+      </div>
+    </section>
+
+    <!-- CHART SECTION -->
+    <section class="chart-section" aria-label="Grafik Ringkasan">
+      <div class="chart-panel">
+        <h3 class="chart-title">Pengeluaran & Pemasukan 6 Bulan Terakhir</h3>
+        <canvas id="barChart" height="200"></canvas>
+      </div>
+      <div class="chart-panel donut-panel">
+        <h3 class="chart-title">Proporsi Bulan Ini</h3>
+        <canvas id="donutChart" width="200" height="200"></canvas>
+      </div>
+    </section>
+
+    <!-- MAIN WORKSPACE: Form (kiri) + Lists (kanan) -->
+    <div class="workspace">
+
+      <!-- LEFT: FORM -->
+      <section class="form-section" aria-label="Form transaksi">
+        <h2 class="section-card-title" id="formTitle">Tambah Transaksi</h2>
+        <form id="transactionForm" novalidate>
+
+          <!-- Type Toggle -->
+          <div class="type-toggle-wrap">
+            <div class="type-toggle" id="typeToggle">
+              <button type="button" class="type-btn active" id="btnIncome" data-type="income">Pemasukan</button>
+              <button type="button" class="type-btn" id="btnExpense" data-type="expense">Pengeluaran</button>
+            </div>
+          </div>
+          <input type="hidden" id="transactionType" value="income" />
+
+          <div class="form-group">
+            <label for="transactionTitle" class="form-label">Nama Transaksi</label>
+            <input type="text" id="transactionTitle" class="form-input" placeholder="Contoh: Gaji Bulanan"
+              autocomplete="off" required />
+          </div>
+
+          <div class="form-group">
+            <label for="transactionAmount" class="form-label">Jumlah (Rp)</label>
+            <input type="number" id="transactionAmount" class="form-input" placeholder="0" min="1" required />
+          </div>
+
+          <div class="form-group">
+            <label for="transactionCategory" class="form-label">Kategori</label>
+            <select id="transactionCategory" class="form-input" required>
+              <!-- Options populated by JS -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="transactionDate" class="form-label">Tanggal</label>
+            <input type="date" id="transactionDate" class="form-input" required />
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span class="material-symbols-outlined btn-icon">add</span>
+            <span id="submitBtnText">Tambah</span>
+          </button>
+          <button type="button" class="btn-cancel" id="cancelEditBtn" style="display:none;">Batal Edit</button>
+
+        </form>
+      </section>
+
+      <!-- RIGHT: SEARCH + LISTS -->
+      <section class="lists-section" aria-label="Daftar transaksi">
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <select id="filterMonth" class="form-input filter-select">
+              <option value="">Semua Bulan</option>
+            </select>
+            <select id="filterCategory" class="form-input filter-select">
+              <option value="">Semua Kategori</option>
+            </select>
+            <select id="sortBy" class="form-input filter-select">
+              <option value="date-desc">Terbaru</option>
+              <option value="date-asc">Terlama</option>
+              <option value="amount-desc">Tertinggi</option>
+              <option value="amount-asc">Terendah</option>
+            </select>
+          </div>
+          <div class="filter-actions">
+            <button type="button" class="btn-action btn-budget" id="btnSetBudget" title="Atur Batas Budget">
+              <span class="material-symbols-outlined">account_balance_wallet</span>
+            </button>
+            <button type="button" class="btn-action btn-export" id="btnExportCsv" title="Export ke CSV">
+              <span class="material-symbols-outlined">download</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-wrapper">
+          <span class="material-symbols-outlined search-icon-el">search</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="Cari transaksi..." autocomplete="off" />
+          <button type="button" class="search-clear" id="searchClear" style="display:none;"
+            aria-label="Hapus pencarian">close</button>
+        </div>
+
+        <!-- 2-col list grid -->
+        <div class="lists-grid">
+
+          <!-- PEMASUKAN -->
+          <div class="list-col">
+            <h3 class="list-title">
+              <span
+                class="material-symbols-outlined list-title-icon list-title-icon--income icon-fill">arrow_circle_down</span>
+              Pemasukan
+              <span class="list-badge" id="incomeBadge">0</span>
+            </h3>
+            <div class="transaction-list" id="incomeList">
+              <div class="empty-state" id="incomeEmpty">
+                <span class="material-symbols-outlined empty-icon">inbox</span>
+                <p>Belum ada pemasukan</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PENGELUARAN -->
+          <div class="list-col">
+            <h3 class="list-title">
+              <span
+                class="material-symbols-outlined list-title-icon list-title-icon--expense icon-fill">arrow_circle_up</span>
+              Pengeluaran
+              <span class="list-badge" id="expenseBadge">0</span>
+            </h3>
+            <div class="transaction-list" id="expenseList">
+              <div class="empty-state" id="expenseEmpty">
+                <span class="material-symbols-outlined empty-icon">inbox</span>
+                <p>Belum ada pengeluaran</p>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /.lists-grid -->
+      </section>
+
+    </div><!-- /.workspace -->
+
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="app-footer">
+    <p>&copy; 2026 FinTrack &mdash; Submission Front-End Web Pemula Dicoding</p>
+  </footer>
+
+  <!-- Confirm Delete Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-content">
+      <h3 class="modal-title">Hapus Transaksi?</h3>
+      <p class="modal-body">Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-modal btn-cancel-modal" id="btnCancelDelete">Batal</button>
+        <button type="button" class="btn-modal btn-confirm-modal" id="btnConfirmDelete">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script src="main.js"></script>
+</body>
+
+</html>

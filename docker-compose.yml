@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # 1. Service Backend (Python FastAPI)
+  backend:
+    build: ./backend
+    container_name: fintrack-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/fintrack.db:/app/fintrack.db  # Menyimpan database agar tidak hilang saat restart
+    environment:
+      - PORT=8000
+
+  # 2. Service Frontend (Nginx)
+  frontend:
+    image: nginx:alpine
+    container_name: fintrack-frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/usr/share/nginx/html:ro  # Menyajikan file HTML, CSS, JS di root
+    depends_on:
+      - backend
