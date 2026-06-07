@@ -352,19 +352,34 @@ Semua operasi I/O data akan digantikan dengan native `fetch()` API.
 
 // [MASA DEPAN - CLOUD]
 async function fetchTransactions() {
-  const response = await fetch('http://localhost:8000/api/transactions');
+  const response = await fetch('http://localhost:8000/api/transactions', {
+    headers: { 'Authorization': `Bearer ${authToken}` }
+  });
+  if (response.status === 401) {
+     handleUnauthorized(); // Token kadaluarsa/tidak valid
+     return;
+  }
   transactions = await response.json();
   dispatchTransactionUpdated();
 }
 ```
 
-### Standar Teknis Backend (Rencana)
+### 🔒 Strategi Autentikasi Frontend (JWT)
+1. **Penyimpanan Token**: Token JWT disimpan di `localStorage` dengan key `fintrack_token`.
+2. **Global State**: Variabel `authToken` memuat token di memori.
+3. **Pencegatan UI**: Saat `authToken` bernilai `null`, elemen `<main class="app-main">` diubah menjadi `display: none;` dan Modal Login dimunculkan.
+4. **Header Request**: Setiap I/O data (GET, POST, PUT, DELETE) wajib menyertakan:
+   ```javascript
+   headers: { 'Authorization': `Bearer ${authToken}` }
+   ```
+
+### Standar Teknis Backend (Terimplementasi)
 1. **Framework**: `FastAPI` (Python)
 2. **Server**: `Uvicorn`
 3. **Database ORM**: `SQLAlchemy`
 4. **Validasi**: `Pydantic` Models
-5. **Autentikasi**: JWT (JSON Web Tokens) Bearer
-6. **CORS Policy**: Wajib mengizinkan origin Frontend (`http://127.0.0.1:5500` / domain production).
+5. **Autentikasi**: JWT (JSON Web Tokens) Bearer + Bcrypt Password Hashing
+6. **CORS Policy**: Mengizinkan origin Frontend (`http://localhost:5500`, `http://localhost:8899`).
 
 ---
 _File ini adalah panduan tetap. Update hanya jika ada perubahan arsitektur besar._
