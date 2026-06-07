@@ -1,100 +1,123 @@
 # 💸 FinTrack — Personal Expense Tracker
 
-![FinTrack Banner](https://img.shields.io/badge/FinTrack-Portfolio_Project-blue?style=for-the-badge) ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi) ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![FinTrack](https://img.shields.io/badge/FinTrack-Portfolio_Project-2563EB?style=for-the-badge)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-Aplikasi pencatat keuangan pribadi modern berskala *Full-Stack* yang dikembangkan dari sebuah proyek **Submission Akhir (Dicoding Front-End Web Pemula)** menjadi sebuah **Aplikasi Portfolio Kelas Produksi**.
+Aplikasi pencatat keuangan pribadi modern berskala *Full-Stack* — dikembangkan dari **Submission Akhir Dicoding Front-End Web Pemula** menjadi **Aplikasi Portfolio Kelas Produksi**.
 
 ---
 
 ## ✨ Fitur Unggulan
 
-Proyek ini telah berevolusi melewati 3 fase pengembangan utama:
+### 🎯 Fase 1 — Core Submission (Dicoding DOM) ✅
+- **CRUD Transaksi** — Tambah, Edit, Hapus, dan Ubah Tipe (Pemasukan ↔ Pengeluaran)
+- **Sinkronisasi Real-Time** — Pembaruan UI via *Custom Event API*
+- **Live Search** — Pencarian transaksi instan berdasarkan judul
+- **Kepatuhan Penuh** — Melewati semua tes Dicoding tanpa menggunakan library eksternal
 
-### Fase 1: Core Submission (Dicoding DOM) ✅
-- **CRUD Transaksi**: Tambah, Edit, Hapus, dan Ubah Tipe (Pemasukan ↔ Pengeluaran).
-- **Sinkronisasi Real-Time**: Pembaruan antar elemen UI menggunakan *Custom Event API*.
-- **Live Search**: Pencarian transaksi secara instan berdasarkan judul.
-- **Kepatuhan Mutlak**: Melewati semua tes Dicoding (tanpa mengubah `data-testid` atau menggunakan *library* eksternal).
+### 🚀 Fase 2 — Portfolio Upgrade (UI/UX) ✅
+- **Visualisasi Data** — Bar chart & Donut chart interaktif via Canvas API
+- **Export CSV** — Unduh seluruh rekap transaksi ke file `.csv`
+- **Filter & Sort** — Filter berdasarkan bulan, kategori, dan urutan nominal/tanggal
+- **Keyboard Shortcuts** — Navigasi cepat `N` (tambah) dan `/` (pencarian)
 
-### Fase 2: Portfolio Upgrade (UI/UX) ✅
-- **Visualisasi Data**: Grafik *Doughnut* dan *Line Chart* interaktif menggunakan Canvas API.
-- **Dark/Light Mode**: Tema yang menyesuaikan preferensi mata pengguna (tersimpan di pengaturan lokal).
-- **Budget Bulanan**: Atur target pengeluaran dan pantau melalui *Progress Bar* (indikator warna dinamis).
-- **Export Data**: Unduh seluruh rekap transaksi ke dalam format `.CSV`.
-- **Keyboard Shortcuts**: Navigasi cepat menggunakan tombol `N` (Tambah baru) dan `/` (Pencarian).
-- **Print Layout**: Tata letak rapi yang siap dicetak di atas kertas kosong (*media query print*).
-
-### Fase 3: Full-Stack Architecture (Python & SQLite) ✅
-- **Sistem Autentikasi**: *Login* dan *Register* terenkripsi (JSON Web Tokens & Bcrypt).
-- **REST API Backend**: Dibangun menggunakan *FastAPI* (Python).
-- **Manajemen Database**: *Object-Relational Mapping (ORM)* menggunakan *SQLAlchemy* (dukungan instan dari SQLite ke MySQL).
-- **Fetch API Integration**: Modifikasi 100% *Vanilla JavaScript* untuk membaca/menulis data ke peladen (*server*) secara *asynchronous*, menggantikan *LocalStorage*.
+### 🔐 Fase 3 — Full-Stack Architecture ✅
+- **Sistem Autentikasi** — Login & Register dengan JWT + Bcrypt
+- **REST API Backend** — Dibangun menggunakan *FastAPI* (Python)
+- **Database ORM** — *SQLAlchemy* dengan SQLite (mudah migrasi ke MySQL/PostgreSQL)
+- **Fetch API** — 100% Vanilla JS asynchronous, menggantikan LocalStorage
+- **Docker Ready** — Siap dikontainerisasi dengan `docker-compose`
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## 🛠️ Tech Stack
 
-### Frontend
-- **HTML5 & CSS3** — Desain semantik, CSS Variables, Flexbox, & Grid.
-- **Vanilla JavaScript (ES6+)** — Arsitektur berbasis komponen tanpa *framework*, Fetch API, Custom Events.
-- **Chart.js** — Visualisasi analitik data keuangan.
-
-### Backend
-- **Python 3** — Bahasa inti peladen.
-- **FastAPI** — Kerangka kerja asinkron super cepat.
-- **SQLAlchemy** — ORM untuk interaksi basis data tanpa bahasa SQL mentah.
-- **PassLib & Jose** — Sistem keamanan (Hashing & JWT).
+| Layer | Teknologi |
+|---|---|
+| **Frontend** | HTML5, Vanilla CSS, JavaScript (ES6+) |
+| **Charts** | Canvas API (native) |
+| **Backend** | Python 3, FastAPI, Uvicorn |
+| **Database** | SQLite via SQLAlchemy ORM |
+| **Auth** | JWT (python-jose) + Bcrypt (passlib) |
+| **Container** | Docker & Docker Compose |
 
 ---
 
 ## 📁 Struktur Direktori
 
 ```text
-/
-├── index.html              # Struktur Utama UI
-├── style.css               # Gaya Visual Utama & Tema
-├── main.js                 # Logika Antarmuka (Fetch, DOM, Events)
-├── backend/                # [Folder Mesin Backend]
-│   ├── main.py             # Endpoint API FastAPI
-│   ├── models.py           # Skema Tabel Database (SQLAlchemy)
-│   ├── schemas.py          # Validasi Input/Output (Pydantic)
-│   └── auth.py             # Logika Enkripsi & JWT
-└── dokumentasi/            # Panduan Proyek Lanjutan
-    ├── PROGRESS.md         # Catatan Evolusi Proyek
-    ├── SKILL.md            # Dokumentasi Teknis Internal
-    ├── DESIGN.md           # Sistem Desain Visual
-    └── Submission.md       # Spesifikasi Dicoding
+FinTrack/
+├── frontend/                   # Antarmuka pengguna
+│   ├── index.html              # Dashboard utama
+│   ├── login.html              # Halaman login
+│   ├── register.html           # Halaman registrasi
+│   ├── forgot-password.html    # Halaman lupa password
+│   └── assets/
+│       ├── css/style.css       # Gaya visual utama
+│       └── js/
+│           ├── main.js         # Logika dashboard (CRUD, Chart, Events)
+│           └── auth.js         # Logika autentikasi
+├── backend/                    # Mesin server
+│   ├── main.py                 # Endpoint REST API (FastAPI)
+│   ├── models.py               # Skema tabel database (SQLAlchemy)
+│   ├── schemas.py              # Validasi data (Pydantic)
+│   ├── auth.py                 # Enkripsi & JWT
+│   ├── requirements.txt        # Dependensi Python
+│   └── Dockerfile              # Image Docker backend
+├── docker-compose.yml          # Orkestrasi container
+└── README.md
 ```
 
 ---
 
-## 🚀 Cara Menjalankan Aplikasi
+## 🚀 Cara Menjalankan
 
-Aplikasi ini menggunakan model *Client-Server*, sehingga Anda perlu menjalankan peladen (Backend) dan penampil (Frontend).
+### Metode 1 — Manual (Tanpa Docker)
 
-### Langkah 1: Jalankan Backend (FastAPI)
-1. Buka terminal dan arahkan ke folder `backend`.
-2. Aktifkan *Virtual Environment*:
-   - Linux/Mac: `source venv/bin/activate`
-   - Windows: `venv\Scripts\activate`
-3. Jalankan peladen (di Port 8089 atau 8000 bebas):
-   ```bash
-   uvicorn main:app --reload --port 8089
-   ```
+**Step 1 — Jalankan Backend**
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8089
+```
+Backend berjalan di → `http://localhost:8089`
 
-### Langkah 2: Jalankan Frontend (Browser)
-1. Jika menggunakan **VS Code**, klik kanan pada file `index.html` dan pilih **"Open with Live Server"**.
-2. Atau jalankan *Local Server* mandiri (contoh: Python HTTP Server) pada *root folder* proyek:
-   ```bash
-   python3 -m http.server 5500
-   ```
-3. Buka peramban (browser) di alamat peladen tersebut (Contoh: `http://localhost:5500`).
+**Step 2 — Jalankan Frontend**
+```bash
+cd frontend
+python3 -m http.server 5050
+```
+Buka browser di → `http://localhost:5050`
 
-### Langkah 3: Pengujian (Testing)
-- Karena tidak ada akun bawaan demi keamanan aplikasi, Anda akan dicegat oleh **Modal Login**.
-- **Buat Akun Baru**: Masukkan *Username* dan *Password*, lalu klik tombol **Daftar**.
-- Setelah notifikasi hijau muncul, gunakan data yang sama lalu klik tombol **Login**.
-- Anda berhasil masuk! Dasbor keuangan kini terhubung secara *real-time* ke sistem *cloud lokal* (SQLite).
+### Metode 2 — Docker Compose
+
+```bash
+docker-compose up --build
+```
+
+---
+
+## 🔑 Cara Mulai Menggunakan
+
+1. Buka `http://localhost:5050` di browser
+2. Klik **Daftar** → buat akun baru (username + password)
+3. Login dengan akun yang telah dibuat
+4. Mulai catat pemasukan dan pengeluaran Anda!
+
+---
+
+## 📸 Tampilan Aplikasi
+
+| Halaman | Deskripsi |
+|---|---|
+| **Dashboard** | Top navbar, summary cards, bar chart, donut chart, form transaksi & riwayat |
+| **Login** | Form autentikasi dengan JWT |
+| **Register** | Pembuatan akun baru |
 
 ---
 
