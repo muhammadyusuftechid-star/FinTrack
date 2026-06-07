@@ -58,14 +58,8 @@ const DOM = {
   btnExpense: document.getElementById('btnExpense'),
 
   // Lists
-  incomeList:  document.getElementById('incomeList'),
-  expenseList: document.getElementById('expenseList'),
-  incomeEmpty: document.getElementById('incomeEmpty'),
-  expenseEmpty:document.getElementById('expenseEmpty'),
-
-  // Badges
-  incomeBadge: document.getElementById('incomeBadge'),
-  expenseBadge:document.getElementById('expenseBadge'),
+  transactionList: document.getElementById('transactionList'),
+  transactionEmpty: document.getElementById('transactionEmpty'),
 
   // Summary
   balance:      document.getElementById('balance'),
@@ -78,29 +72,21 @@ const DOM = {
   filterMonth:    document.getElementById('filterMonth'),
   filterCategory: document.getElementById('filterCategory'),
   sortBy:         document.getElementById('sortBy'),
-  btnSetBudget:   document.getElementById('btnSetBudget'),
   btnExportCsv:   document.getElementById('btnExportCsv'),
-
-  // Budget Progress
-  budgetSection:  document.getElementById('budgetSection'),
-  budgetStatus:   document.getElementById('budgetStatus'),
-  budgetBarFill:  document.getElementById('budgetBarFill'),
 
   // Modal Delete
   confirmModal:     document.getElementById('confirmModal'),
   btnCancelDelete:  document.getElementById('btnCancelDelete'),
-  btnConfirmDelete: document.getElementById('btnConfirmDelete')
-
-  // Theme
-  themeToggle:    document.getElementById('themeToggle'),
-  themeIcon:      document.getElementById('themeIcon'),
+  btnConfirmDelete: document.getElementById('btnConfirmDelete'),
 
   // Charts
   barChart:       document.getElementById('barChart'),
   donutChart:     document.getElementById('donutChart'),
 
   // Misc
-  formSection: document.querySelector('.form-section'),
+  formSection: document.getElementById('transactionForm'),
+  greeting:    document.getElementById('greeting'),
+  btnLogout:   document.getElementById('btnLogout'),
   toast:       document.getElementById('toast'),
 };
 
@@ -124,7 +110,7 @@ async function loadFromStorage() {
   }
 
   if (loggedInUser && DOM.greeting) {
-    DOM.greeting.textContent = `Halo, ${loggedInUser}`;
+    DOM.greeting.textContent = loggedInUser;
   }
 
   try {
@@ -179,8 +165,8 @@ document.addEventListener('transactionUpdated', () => {
   updateFilterCategoryOptions();
   renderAllTransactions();
   updateSummary(transactions);
+  updateSummary(transactions);
   updateCharts();
-  updateBudgetProgress();
 });
 
 // Update dropdown filterMonth agar dinamis
@@ -230,98 +216,83 @@ DOM.sortBy.addEventListener('change', (e) => { sortBy = e.target.value; dispatch
 function createTransactionCard(tx) {
   const isIncome = tx.type === 'income';
 
-  /* ── Card wrapper ── */
-  const card = document.createElement('div');
+  const card = document.createElement('li');
+  card.className = 'tx-list-item';
   card.setAttribute('data-testid', 'transactionItem');
   card.setAttribute('data-id', tx.id);
-  card.classList.add(isIncome ? 'income-card' : 'expense-card');
 
-  /* ── Top row: title + badge ── */
-  const cardTop = document.createElement('div');
-  cardTop.classList.add('card-top');
+  // Left Side
+  const leftSide = document.createElement('div');
+  leftSide.className = 'tx-item-left';
 
-  const title = document.createElement('h3');
+  const iconContainer = document.createElement('div');
+  iconContainer.className = `tx-item-icon ${isIncome ? 'income' : 'expense'}`;
+
+  const icon = document.createElement('span');
+  icon.className = 'material-symbols-outlined';
+  icon.textContent = CATEGORY_ICONS[tx.category] || (isIncome ? 'arrow_downward' : 'arrow_upward');
+  iconContainer.appendChild(icon);
+
+  const info = document.createElement('div');
+
+  const title = document.createElement('p');
+  title.className = 'tx-item-title';
   title.setAttribute('data-testid', 'transactionItemTitle');
   title.textContent = tx.title;
 
-  let categoryEl = null;
-  if (tx.category) {
-    categoryEl = document.createElement('span');
-    categoryEl.className = 'card-category';
-    const catIcon = document.createElement('span');
-    catIcon.className = 'material-symbols-outlined';
-    catIcon.textContent = CATEGORY_ICONS[tx.category] || 'more_horiz';
-    categoryEl.appendChild(catIcon);
-    categoryEl.appendChild(document.createTextNode(' ' + tx.category));
-  }
+  const meta = document.createElement('p');
+  meta.className = 'tx-item-meta';
+  meta.setAttribute('data-testid', 'transactionItemDate');
+  meta.textContent = `${tx.date} · ${tx.category || (isIncome ? 'Pemasukan' : 'Pengeluaran')}`;
 
-  const badge = document.createElement('span');
-  badge.classList.add('card-badge', isIncome ? 'card-badge--income' : 'card-badge--expense');
-  badge.textContent = isIncome ? 'Pemasukan' : 'Pengeluaran';
+  info.appendChild(title);
+  info.appendChild(meta);
 
-  cardTop.appendChild(title);
-  if (categoryEl) cardTop.appendChild(categoryEl);
-  cardTop.appendChild(badge);
+  leftSide.appendChild(iconContainer);
+  leftSide.appendChild(info);
 
-  /* ── Nominal ── */
-  // Format: "Nominal: Rp10000" — sesuai spesifikasi data-testid Submission.md
+  // Right Side
+  const rightSide = document.createElement('div');
+  rightSide.className = 'tx-item-right';
+
+  const amountWrapper = document.createElement('div');
+
   const amount = document.createElement('p');
+  amount.className = `tx-item-amount ${isIncome ? 'income' : 'expense'}`;
   amount.setAttribute('data-testid', 'transactionItemAmount');
-  amount.textContent = `Nominal: Rp${tx.amount}`;
+  amount.textContent = `${isIncome ? '+' : '-'}Rp ${tx.amount.toLocaleString('id-ID')}`;
 
-  /* ── Tanggal ── */
-  const date = document.createElement('p');
-  date.setAttribute('data-testid', 'transactionItemDate');
-  date.textContent = `Tanggal: ${tx.date}`;
+  const typeLabel = document.createElement('p');
+  typeLabel.style.display = 'none';
+  typeLabel.setAttribute('data-testid', 'transactionItemType');
+  typeLabel.textContent = `Tipe: ${isIncome ? 'Pemasukan' : 'Pengeluaran'}`;
 
-  /* ── Tipe (wajib ada, disembunyikan via CSS display:none) ── */
-  const type = document.createElement('p');
-  type.setAttribute('data-testid', 'transactionItemType');
-  type.textContent = `Tipe: ${isIncome ? 'Pemasukan' : 'Pengeluaran'}`;
+  amountWrapper.appendChild(amount);
+  amountWrapper.appendChild(typeLabel);
 
-  /* ── Action buttons (icon-only + tooltip) ── */
+  // Actions
   const actions = document.createElement('div');
-  actions.classList.add('card-actions');
+  actions.className = 'tx-item-actions';
 
-  // Helper: buat icon button dengan teks label
-  function makeIconBtn(iconName, label, cls) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.classList.add('card-icon-btn', cls);
-    btn.title = label;
-    btn.setAttribute('aria-label', label);
-    const icon = document.createElement('span');
-    icon.classList.add('material-symbols-outlined');
-    icon.textContent = iconName;
-    const text = document.createElement('span');
-    text.classList.add('card-icon-btn-label');
-    text.textContent = label;
-    btn.appendChild(icon);
-    btn.appendChild(text);
-    return btn;
-  }
+  const btnEdit = document.createElement('button');
+  btnEdit.className = 'tx-action-btn';
+  btnEdit.innerHTML = '<span class="material-symbols-outlined">edit</span>';
+  btnEdit.addEventListener('click', (e) => { e.stopPropagation(); handleEditClick(tx.id); });
 
-  const btnSwitch = makeIconBtn('swap_horiz', 'Ubah Tipe', 'btn-icon-switch');
-  btnSwitch.setAttribute('data-testid', 'transactionItemEditTypeButton');
-  btnSwitch.addEventListener('click', () => toggleType(tx.id));
-
-  const btnEdit = makeIconBtn('edit', 'Edit', 'btn-icon-edit');
-  btnEdit.addEventListener('click', () => handleEditClick(tx.id));
-
-  const btnDelete = makeIconBtn('delete', 'Hapus', 'btn-icon-delete');
+  const btnDelete = document.createElement('button');
+  btnDelete.className = 'tx-action-btn delete';
   btnDelete.setAttribute('data-testid', 'transactionItemDeleteButton');
-  btnDelete.addEventListener('click', () => handleDelete(tx.id));
+  btnDelete.innerHTML = '<span class="material-symbols-outlined">delete</span>';
+  btnDelete.addEventListener('click', (e) => { e.stopPropagation(); handleDelete(tx.id); });
 
-  actions.appendChild(btnSwitch);
   actions.appendChild(btnEdit);
   actions.appendChild(btnDelete);
 
-  /* ── Susun ke card ── */
-  card.appendChild(cardTop);
-  card.appendChild(amount);
-  card.appendChild(date);
-  card.appendChild(type);
-  card.appendChild(actions);
+  rightSide.appendChild(amountWrapper);
+  rightSide.appendChild(actions);
+
+  card.appendChild(leftSide);
+  card.appendChild(rightSide);
 
   return card;
 }
@@ -348,42 +319,20 @@ function getFilteredTransactions() {
 function renderAllTransactions() {
   const filtered = getFilteredTransactions();
 
-  const incomeItems  = filtered.filter(tx => tx.type === 'income');
-  const expenseItems = filtered.filter(tx => tx.type === 'expense');
-
   /* Kosongkan list (kecuali empty-state element) */
-  clearList(DOM.incomeList,  DOM.incomeEmpty);
-  clearList(DOM.expenseList, DOM.expenseEmpty);
+  clearList(DOM.transactionList, DOM.transactionEmpty);
 
-  /* Render income */
-  if (incomeItems.length === 0) {
-    DOM.incomeEmpty.style.display = 'flex';
-    DOM.incomeEmpty.querySelector('p').textContent = searchQuery
+  if (filtered.length === 0) {
+    DOM.transactionEmpty.style.display = 'flex';
+    DOM.transactionEmpty.querySelector('p').textContent = searchQuery
       ? 'Tidak ada hasil pencarian'
-      : 'Belum ada pemasukan';
+      : 'Belum ada transaksi';
   } else {
-    DOM.incomeEmpty.style.display = 'none';
-    incomeItems.forEach(tx => {
-      DOM.incomeList.appendChild(createTransactionCard(tx));
+    DOM.transactionEmpty.style.display = 'none';
+    filtered.forEach(tx => {
+      DOM.transactionList.appendChild(createTransactionCard(tx));
     });
   }
-
-  /* Render expense */
-  if (expenseItems.length === 0) {
-    DOM.expenseEmpty.style.display = 'flex';
-    DOM.expenseEmpty.querySelector('p').textContent = searchQuery
-      ? 'Tidak ada hasil pencarian'
-      : 'Belum ada pengeluaran';
-  } else {
-    DOM.expenseEmpty.style.display = 'none';
-    expenseItems.forEach(tx => {
-      DOM.expenseList.appendChild(createTransactionCard(tx));
-    });
-  }
-
-  /* Update badge count */
-  DOM.incomeBadge.textContent  = incomeItems.length;
-  DOM.expenseBadge.textContent = expenseItems.length;
 }
 
 /**
@@ -533,7 +482,7 @@ function handleEditClick(id) {
   DOM.formTitle.textContent       = 'Edit Transaksi';
   DOM.submitBtnText.textContent   = 'Simpan Perubahan';
   DOM.cancelEditBtn.style.display = 'inline-flex';
-  DOM.formSection.classList.add('edit-mode');
+  DOM.cancelEditBtn.style.display = 'block';
 
   const card = document.querySelector(`[data-id="${id}"]`);
   if (card) {
@@ -550,7 +499,7 @@ function cancelEditMode() {
   DOM.formTitle.textContent       = 'Tambah Transaksi';
   DOM.submitBtnText.textContent   = 'Tambah';
   DOM.cancelEditBtn.style.display = 'none';
-  DOM.formSection.classList.remove('edit-mode');
+  DOM.cancelEditBtn.style.display = 'none';
 }
 
 DOM.cancelEditBtn.addEventListener('click', () => {
@@ -576,6 +525,14 @@ DOM.btnCancelDelete.addEventListener('click', () => {
   DOM.confirmModal.classList.remove('show');
 });
 
+// Close modal on overlay click
+DOM.confirmModal.addEventListener('click', (e) => {
+  if (e.target === DOM.confirmModal) {
+    deleteCandidateId = null;
+    DOM.confirmModal.classList.remove('show');
+  }
+});
+
 DOM.btnConfirmDelete.addEventListener('click', async () => {
   if (deleteCandidateId !== null) {
     try {
@@ -588,7 +545,6 @@ DOM.btnConfirmDelete.addEventListener('click', async () => {
       transactions = transactions.filter(tx => tx.id !== deleteCandidateId);
       dispatchTransactionUpdated();
 
-      /* Jika sedang edit transaksi yang dihapus, batalkan edit */
       if (editId === deleteCandidateId) {
         cancelEditMode();
         resetForm();
@@ -744,6 +700,8 @@ function showToast(message, type = 'info', duration = 3000) {
     DOM.toast.classList.remove('show');
   }, duration);
 }
+
+function setTheme(t) { /* no-op: theme controlled by CSS */ }
 
 /* ============================================================
    CHART FUNCTIONS (Canvas API Native)
@@ -927,65 +885,7 @@ DOM.btnExportCsv.addEventListener('click', () => {
   showToast('Data berhasil diekspor ke CSV.', 'success');
 });
 
-/* P6: Budget Limit */
-DOM.btnSetBudget.addEventListener('click', () => {
-  const input = prompt('Masukkan batas pengeluaran bulanan Anda (Rp):', monthlyBudget || '');
-  if (input === null) return; // Cancelled
-  const val = parseFloat(input);
-  if (isNaN(val) || val < 0) {
-    showToast('Nominal budget tidak valid.', 'error');
-    return;
-  }
-  monthlyBudget = val;
-  localStorage.setItem('fintrack_budget', monthlyBudget);
-  updateBudgetProgress();
-  showToast('Batas pengeluaran berhasil diatur.', 'success');
-});
-
-function updateBudgetProgress() {
-  if (!monthlyBudget || monthlyBudget <= 0) {
-    DOM.budgetSection.style.display = 'none';
-    return;
-  }
-  DOM.budgetSection.style.display = 'block';
-
-  const currentMonth = new Date().toISOString().slice(0, 7);
-  const expMonth = transactions
-    .filter(t => t.type === 'expense' && t.date.startsWith(currentMonth))
-    .reduce((s, t) => s + t.amount, 0);
-
-  DOM.budgetStatus.textContent = `${formatRupiah(expMonth)} / ${formatRupiah(monthlyBudget)}`;
-  
-  let pct = (expMonth / monthlyBudget) * 100;
-  if (pct > 100) pct = 100;
-  
-  DOM.budgetBarFill.style.width = pct + '%';
-  
-  DOM.budgetBarFill.className = 'budget-bar-fill';
-  if (pct >= 90) {
-    DOM.budgetBarFill.classList.add('danger');
-  } else if (pct >= 75) {
-    DOM.budgetBarFill.classList.add('warning');
-  }
-}
-
-/* P7: Dark/Light Mode */
-DOM.themeToggle.addEventListener('click', () => {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  setTheme(isDark ? 'light' : 'dark');
-});
-
-function setTheme(theme) {
-  if (theme === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    if (DOM.themeIcon) DOM.themeIcon.textContent = 'light_mode';
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-    if (DOM.themeIcon) DOM.themeIcon.textContent = 'dark_mode';
-  }
-  localStorage.setItem('fintrack_theme', theme);
-  requestAnimationFrame(updateCharts);
-}
+// Budget & Theme handlers removed for this template
 
 /* ============================================================
    17. P9: KEYBOARD SHORTCUTS
