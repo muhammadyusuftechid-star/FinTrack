@@ -89,14 +89,7 @@ const DOM = {
   // Modal Delete
   confirmModal:     document.getElementById('confirmModal'),
   btnCancelDelete:  document.getElementById('btnCancelDelete'),
-  btnConfirmDelete: document.getElementById('btnConfirmDelete'),
-
-  // Modal Auth
-  loginModal:   document.getElementById('loginModal'),
-  authUsername: document.getElementById('authUsername'),
-  authPassword: document.getElementById('authPassword'),
-  btnLogin:     document.getElementById('btnLogin'),
-  btnRegister:  document.getElementById('btnRegister'),
+  btnConfirmDelete: document.getElementById('btnConfirmDelete')
 
   // Theme
   themeToggle:    document.getElementById('themeToggle'),
@@ -1035,15 +1028,7 @@ document.addEventListener('keydown', (e) => {
    ============================================================ */
 
 function showLoginModal() {
-  if (DOM.loginModal) DOM.loginModal.classList.add('show');
-  const mainContent = document.querySelector('.app-main');
-  if (mainContent) mainContent.style.display = 'none';
-}
-
-function hideLoginModal() {
-  if (DOM.loginModal) DOM.loginModal.classList.remove('show');
-  const mainContent = document.querySelector('.app-main');
-  if (mainContent) mainContent.style.display = '';
+  window.location.href = 'login.html';
 }
 
 function handleUnauthorized() {
@@ -1053,7 +1038,6 @@ function handleUnauthorized() {
   localStorage.removeItem('fintrack_user');
   transactions = [];
   dispatchTransactionUpdated();
-  showToast('Sesi Anda berakhir. Silakan login kembali.', 'error');
   showLoginModal();
 }
 
@@ -1061,66 +1045,6 @@ const btnLogout = document.getElementById('btnLogout');
 if (btnLogout) {
   btnLogout.addEventListener('click', () => {
     handleUnauthorized();
-    showToast('Berhasil logout!', 'success');
-  });
-}
-
-if (DOM.btnLogin) {
-  DOM.btnLogin.addEventListener('click', async () => {
-    const username = DOM.authUsername.value.trim();
-    const password = DOM.authPassword.value.trim();
-    if (!username || !password) return showToast('Username & password wajib diisi!', 'error');
-
-    const formData = new URLSearchParams();
-    formData.append('username', username);
-    formData.append('password', password);
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData
-      });
-      if (!res.ok) throw new Error('Username atau password salah');
-      
-      const data = await res.json();
-      authToken = data.access_token;
-      loggedInUser = data.username;
-      localStorage.setItem('fintrack_token', authToken);
-      localStorage.setItem('fintrack_user', loggedInUser);
-      if (DOM.greeting) DOM.greeting.textContent = `Halo, ${loggedInUser}`;
-      hideLoginModal();
-      showToast('Login berhasil!', 'success');
-      init(); // Reload data
-    } catch (e) {
-      showToast(e.message, 'error');
-    }
-  });
-}
-
-if (DOM.btnRegister) {
-  DOM.btnRegister.addEventListener('click', async () => {
-    const username = DOM.authUsername.value.trim();
-    const password = DOM.authPassword.value.trim();
-    if (!username || !password) return showToast('Username & password wajib diisi!', 'error');
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || 'Gagal mendaftar');
-      }
-      
-      showToast('Registrasi berhasil! Silakan Login.', 'success');
-      DOM.authPassword.value = '';
-    } catch (e) {
-      showToast(e.message, 'error');
-    }
   });
 }
 
